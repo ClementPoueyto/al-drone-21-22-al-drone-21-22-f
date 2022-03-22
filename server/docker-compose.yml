@@ -1,0 +1,494 @@
+version: '3.7'
+
+services:
+  zookeeper1:
+    image: confluentinc/cp-zookeeper
+    hostname: zookeeper1
+    container_name: zookeeper1
+    ports:
+      - "22181:22181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:22888:23888;zookeeper2:32888:33888;zookeeper3:42888:43888
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_server_jaas.conf
+                -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+                -DrequireClientAuthScheme=sasl
+                -Dzookeeper.allowSaslFailedClients=false
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    networks:
+      - server-network
+    restart: always
+
+  zookeeper2:
+    image: confluentinc/cp-zookeeper
+    hostname: zookeeper2
+    container_name: zookeeper2
+    ports:
+      - "32181:32181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:22888:23888;zookeeper2:32888:33888;zookeeper3:42888:43888
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_server_jaas.conf
+                -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+                -DrequireClientAuthScheme=sasl
+                -Dzookeeper.allowSaslFailedClients=false
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    networks:
+      - server-network
+    restart: always
+
+  zookeeper3:
+    image: confluentinc/cp-zookeeper
+    hostname: zookeeper3
+    container_name: zookeeper3
+    ports:
+      - "42181:42181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 42181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:22888:23888;zookeeper2:32888:33888;zookeeper3:42888:43888
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_server_jaas.conf
+                -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+                -DrequireClientAuthScheme=sasl
+                -Dzookeeper.allowSaslFailedClients=false
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    networks:
+      - server-network
+    restart: always
+
+  kafka-broker1:
+    image: confluentinc/cp-kafka:6.2.1
+    hostname: kafka-broker1
+    container_name: kafka-broker1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SASL_SSL_OUTSIDE:SASL_SSL
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:22181,zookeeper2:32181,zookeeper3:42181
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-broker1:29092,SASL_SSL_OUTSIDE://${SERVER_URL}:9092
+      KAFKA_LISTENERS: SASL_SSL://:29092,SASL_SSL_OUTSIDE://:9092
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker_truststore_creds
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+      KAFKA_SSL_CLIENT_AUTH: requested
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    networks:
+      - server-network
+    restart: always
+    healthcheck:
+      test: nc -z kafka-broker1 29092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka-broker2:
+    image: confluentinc/cp-kafka:6.2.1
+    hostname: kafka-broker2
+    container_name: kafka-broker2
+    ports:
+      - "9093:9093"
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3    
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SASL_SSL_OUTSIDE:SASL_SSL
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:22181,zookeeper2:32181,zookeeper3:42181
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-broker2:29093,SASL_SSL_OUTSIDE://${SERVER_URL}:9093
+      KAFKA_LISTENERS: SASL_SSL://:29093,SASL_SSL_OUTSIDE://:9093
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker_truststore_creds
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+      KAFKA_SSL_CLIENT_AUTH: requested
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    networks:
+      - server-network
+    restart: always
+    healthcheck:
+      test: nc -z kafka-broker2 29093 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka-broker3:
+    image: confluentinc/cp-kafka:6.2.1
+    hostname: kafka-broker3
+    container_name: kafka-broker3
+    ports:
+      - "9094:9094"
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3  
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SASL_SSL_OUTSIDE:SASL_SSL
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:22181,zookeeper2:32181,zookeeper3:42181
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-broker3:29094,SASL_SSL_OUTSIDE://${SERVER_URL}:9094
+      KAFKA_LISTENERS: SASL_SSL://:29094,SASL_SSL_OUTSIDE://:9094
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker_truststore_creds
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+      KAFKA_SSL_CLIENT_AUTH: requested
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    networks:
+      - server-network
+    restart: always
+    healthcheck:
+      test: nc -z kafka-broker3 29094 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    networks:
+      - server-network
+    ports:
+      - 8080:8080
+    volumes:
+      - ./SSL_Server:/etc/kafka/secrets
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3  
+      - kafka-broker1
+      - kafka-broker2
+      - kafka-broker3
+    environment:
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper1:22181,zookeeper2:32181,zookeeper3:42181
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker1:29092,kafka-broker2:29093,kafka-broker3:29094
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_PASSWORD: ArchiServer
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_PASSWORD: ArchiServer
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEY_PASSWORD: ArchiServer
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_SSL
+      KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
+      KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";'
+
+
+  mongodb:
+    image : mongo:latest
+    container_name: server_db
+    volumes:
+      - db_data:/data/db
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: ${DATABASE_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    networks:
+      - server-network
+    restart: always
+
+  fly-manager: 
+    container_name: fly-manager
+    image: fly-manager
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 4001:4001
+    networks:
+      - server-network
+    environment:
+      app_name: fly-manager
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      
+
+  drone-position:
+    container_name: drone-position
+    image: drone-position
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - server-network
+    environment:
+      app_name: drone-position
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_URL: mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+
+  delivery-status:
+    container_name: delivery-status
+    image: delivery-status
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 3002:3002
+    networks:
+      - server-network
+    environment:
+      app_name: delivery-status
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_URL: mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+
+
+  drone-park-manager: 
+    container_name: drone-park-manager
+    image: drone-park-manager
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 4004:4004
+    networks:
+      - server-network
+    environment:
+      app_name: drone-park-manager
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_URL: mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+
+  delivery-planner: 
+    container_name: delivery-planner
+    image: delivery-planner
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 4005:4005
+    networks:
+      - server-network
+    environment:
+      app_name: delivery-planner
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+
+  kafka-message-producer: 
+    container_name: kafka-message-producer
+    image: kafka-message-producer
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 4006:4006
+    networks:
+      - server-network
+    environment:
+      app_name: kafka-message-producer
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+
+  position-alert-listener: 
+    container_name: position-alert-listener
+    image: position-alert-listener
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 4007:4007
+    networks:
+      - server-network
+    environment:
+      app_name: position-alert-listener
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+
+  api-gateway: 
+    container_name: api-gateway
+    image: api-gateway
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 4008:4008
+    networks:
+      - server-network
+    environment:
+      app_name: api-gateway
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka-broker1:
+        condition: service_healthy
+      kafka-broker2:
+        condition: service_healthy
+      kafka-broker3:
+        condition: service_healthy
+
+networks:
+  server-network:
+    driver: bridge
+
+volumes:
+  db_data: {}
+

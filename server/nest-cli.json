@@ -1,0 +1,93 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/fly-manager/src",
+  "monorepo": true,
+  "root": "apps/fly-manager",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/fly-manager/tsconfig.app.json"
+  },
+  "projects": {
+    "fly-manager": {
+      "type": "application",
+      "root": "apps/fly-manager",
+      "entryFile": "main",
+      "sourceRoot": "apps/fly-manager/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/fly-manager/tsconfig.app.json"
+      }
+    },
+    "drone-position": {
+      "type": "application",
+      "root": "apps/drone-position",
+      "entryFile": "main",
+      "sourceRoot": "apps/drone-position/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/drone-position/tsconfig.app.json"
+      }
+    },
+    "test-message-event-fly": {
+      "type": "application",
+      "root": "apps/test-message-event-fly",
+      "entryFile": "main",
+      "sourceRoot": "apps/test-message-event-fly/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/test-message-event-fly/tsconfig.app.json"
+      }
+    },
+    "delivery-status": {
+      "type": "application",
+      "root": "apps/delivery-status",
+      "entryFile": "main",
+      "sourceRoot": "apps/delivery-status/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/delivery-status/tsconfig.app.json"
+      }
+    },
+    "drone-park-manager": {
+      "type": "application",
+      "root": "apps/drone-park-manager",
+      "entryFile": "main",
+      "sourceRoot": "apps/drone-park-manager/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/drone-park-manager/tsconfig.app.json"
+      }
+    },
+    "delivery-planner": {
+      "type": "application",
+      "root": "apps/delivery-planner",
+      "entryFile": "main",
+      "sourceRoot": "apps/delivery-planner/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/delivery-planner/tsconfig.app.json"
+      }
+    },
+    "kafka-message-producer": {
+      "type": "application",
+      "root": "apps/kafka-message-producer",
+      "entryFile": "main",
+      "sourceRoot": "apps/kafka-message-producer/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/kafka-message-producer/tsconfig.app.json"
+      }
+    },
+    "position-alert-listener": {
+      "type": "application",
+      "root": "apps/position-alert-listener",
+      "entryFile": "main",
+      "sourceRoot": "apps/position-alert-listener/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/position-alert-listener/tsconfig.app.json"
+      }
+    },
+    "api-gateway": {
+      "type": "application",
+      "root": "apps/api-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/api-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+      }
+    }
+  }
+}

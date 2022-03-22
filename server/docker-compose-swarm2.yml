@@ -1,0 +1,246 @@
+version: '3.7'
+
+services:
+  
+  server_db:
+    image : mongo:latest
+    volumes:
+      - db_data:/data/db
+    env_file:
+      - .env_swarm
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: ${DATABASE_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    networks:
+      - server-swarm-network
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+
+  fly-manager: 
+    image: fly-manager
+    ports:
+      - 4001:4001
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: fly-manager
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+
+  drone-position:
+    image: drone-position
+    ports:
+      - 3000:3000
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: drone-position
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_URL: mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 3
+      restart_policy:
+        delay: 5s
+
+
+  delivery-status:
+    image: delivery-status
+    ports:
+      - 3002:3002
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: delivery-status
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_URL: mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+
+
+  drone-park-manager: 
+    image: drone-park-manager
+    ports:
+      - 4004:4004
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: drone-park-manager
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_URL: mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+
+  delivery-planner: 
+    image: delivery-planner
+    ports:
+      - 4005:4005
+    environment:
+      app_name: delivery-planner
+    networks:
+      - server-swarm-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+      
+  kafka-message-producer: 
+    image: kafka-message-producer
+    ports:
+      - 4006:4006
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: kafka-message-producer
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+      
+  position-alert-listener: 
+    image: position-alert-listener
+    ports:
+      - 4007:4007
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: position-alert-listener
+      KAFKA_URL1: kafka-broker1:29092
+      KAFKA_URL2: kafka-broker2:29093     
+      KAFKA_URL3: kafka-broker3:29094  
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+
+  api-gateway: 
+    image: api-gateway
+    ports:
+      - 4008:4008
+    networks:
+      - server-swarm-network
+    environment:
+      app_name: api-gateway
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 5s
+        
+  viz:
+    image: dockersamples/visualizer
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+        - 5000:8080
+    networks:
+      - server-swarm-network
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  telegraf:
+      image: telegraf:1.3
+      networks:
+        - server-swarm-network
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      configs:
+        - source: telegraf-config
+          target: /etc/telegraf/telegraf.conf
+      deploy:
+        restart_policy:
+          condition: on-failure
+        mode: global
+
+  influxdb:
+    image: influxdb:1.2
+    networks:
+      - server-swarm-network
+    volumes:
+      - influx:/var/lib/influxdb
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+
+  grafana:
+    image: grafana/grafana:4.3.2
+    environment:
+      - GF_SERVER_HTTP_PORT=2345
+    ports:
+      - "2345:2345"
+    networks:
+      - server-swarm-network
+    volumes:
+      - grafana:/var/lib/grafana
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+configs:
+  telegraf-config:
+    file: $PWD/conf/telegraf/telegraf.conf
+
+networks:
+    server-swarm-network:
+
+volumes:
+  db_data: {}
+  influx: {}
+  grafana: {}
+

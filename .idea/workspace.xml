@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="7c129b69-25d7-4120-b261-04c0c7f912e3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/delivery-status/dto/delivery-status.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/delivery-status/dto/delivery-status.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/delivery-status/src/delivery-status.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/delivery-status/src/delivery-status.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/delivery-status/src/delivery-status.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/delivery-status/src/delivery-status.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/delivery-status/src/delivery-status.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/delivery-status/src/delivery-status.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/delivery-status/test/app.e2e-spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/delivery-status/test/app.e2e-spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/delivery-status/tsconfig.app.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/delivery-status/tsconfig.app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/drone-position/test/app.e2e-spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/drone-position/test/app.e2e-spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/schemas/delivery-status.schemas.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/schemas/delivery-status.schemas.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/test-message-event-fly/test/app.e2e-spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/test-message-event-fly/test/app.e2e-spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/apps/test-message-event-fly/tsconfig.app.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/apps/test-message-event-fly/tsconfig.app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/nest-cli.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/nest-cli.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedIndex" value="1" />
+  </component>
+  <component name="ProjectId" id="1yjlbMGPAnOINsyJrwtDkZXl1Ye" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="C:\Users\DELL\Documents\GitHub\al-drone-21-22-al-drone-21-22-f\server\node_modules\typescript\lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\DELL\Documents\GitHub\al-drone-21-22-al-drone-21-22-f\server\apps\delivery-status\dto" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\DELL\Documents\GitHub\al-drone-21-22-al-drone-21-22-f\server\apps" />
+      <recent name="C:\Users\DELL\Documents\GitHub\al-drone-21-22-al-drone-21-22-f\deliveries" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7c129b69-25d7-4120-b261-04c0c7f912e3" name="Default Changelist" comment="" />
+      <created>1632772955181</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1632772955181</updated>
+      <workItem from="1632772956817" duration="3921000" />
+      <workItem from="1633454127564" duration="3977000" />
+      <workItem from="1634287029896" duration="13471000" />
+      <workItem from="1634890481360" duration="88000" />
+      <workItem from="1634890572292" duration="5389000" />
+      <workItem from="1634896600089" duration="4474000" />
+      <workItem from="1634915277405" duration="7208000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/apps/delivery-status/src/main.ts</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
